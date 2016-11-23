@@ -23,6 +23,12 @@ double z2(double R, double r);
 double z2(double R, double r){
   return (2*gamma0/R+R/(std::pow(r,3)))*(3*R*z/std::pow(r,5));
 }
+
+double phi1(double R, double r); //primera derivada de phi
+double phi1(double R, double r){
+  return (2*gamma0/(R*R))+(1/(std::pow(r,3)));
+}
+//estructuras de datos (vectores de R2 y R4)
 struct vectorR2{
   double R=0;
   double z=0;
@@ -57,26 +63,42 @@ vectorR4 stormer(double (*R2)(double, double), double (*z2)(double, double), dou
   return H;
   
 }
+
+//phi 
+double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n);
+// h= paso del tiempo, f(R,r)=la funcion a integrar, H=(R,z) (r=(R²+z²)^(1/2)), y phi_n= valor inicial de phi
+double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n){
+  double R=H.r1, z=H.r2, r=std::hypot(R,z);
+  double phi_n1=(h*f(R,z))+phi_n;
+  return phi_n1;
+}
+
 //funcion para imprimir
 void printVector(vectorR4 a);
 void printVector(vectorR4 a){
 
-  std::cout<< a.r1 << "\t" << a.r2  << std::endl;
+  std::cout<< a.r1 << "  " << a.r2;
 }
 
 int main(){
-  vectorR4 str, A, B; //vetores stormer y Condiciones iniciales
+  vectorR4 STR, A; //vetores stormer y Condiciones iniciales
   A.r1=R0;   A.r2=z0;  A.r3=R10;  A.r4=z10;
-  double h=0.0001;
+  double h=0.001;
   //intervalo [a , b] , n = (b-a)/h
   int n=(0.3 - 0)/h;
+  double  phi_n=0.0,phi_n1=0.0;
+  
   //  std::cout<< "R" << "\t" << "z" << std::endl;
-
+    
   for (int a=0;a<n;a++){
-  str=stormer(R2,z2,h,n,A);
-  printVector(A);  
-  A=str;
+    STR=stormer(R2,z2,h,n,A);
+    phi_n1=integ(h,phi1,STR,phi_n);
+    printVector(A);
+    std::cout<<"  "<<phi_n1<<std::endl;
+    phi_n=phi_n1;
+    A=STR;
   }
+
   return 0;
 }
 
