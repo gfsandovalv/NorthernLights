@@ -6,7 +6,7 @@
 double const gamma0=-0.5;
 double const u=5*M_PI/4;
 double const R0=0.257453;
-double const z0=0.314687;
+double const z0=0.3146870;
 double const r0=std::hypot(R0,z0);
 double const q0=1-std::pow((2*gamma0/R0+R0/std::pow(r0,3)),2);
 double const z10=std::sqrt(q0)*std::sin(u);//z'_0 (velocidad inicial en z)
@@ -69,7 +69,13 @@ double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n);
 // h= paso del tiempo, f(R,r)=la funcion a integrar, H=(R,z) (r=(R²+z²)^(1/2)), y phi_n= valor inicial de phi
 double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n){
   double R=H.r1, z=H.r2, r=std::hypot(R,z);
-  double phi_n1=(h*f(R,z))+phi_n;
+  double k1=0,k2=0,k3=0,k4=0;
+  k1=f(R,r);
+  k2=f(R+(h/2),r+(h/2));
+  k3=f(R+(h/2),r+(h/2));
+  k4=f(R,r);
+  
+  double phi_n1=phi_n+(h/6)*(k1+2*k2+2*k3+k4);
   return phi_n1;
 }
 
