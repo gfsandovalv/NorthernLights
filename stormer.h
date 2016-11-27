@@ -1,6 +1,7 @@
 #include<cmath>
 #include<iostream>
 #include<iomanip>
+
 #define _USE_MATH_DEFINES 
 //Condiciones de frontera
 double const gamma0=-0.5;
@@ -67,9 +68,16 @@ double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n);
 // h= paso del tiempo, f(R,r)=la funcion a integrar, H=(R,z) (r=(R²+z²)^(1/2)), y phi_n= valor inicial de phi
 double integ(double h, double (*f)(double, double), vectorR4 H, double phi_n){
   double R=H.r1, z=H.r2, r=std::hypot(R,z);
-  double phi_n1=(h*f(R,z))+phi_n;
+  double k1=0,k2=0,k3=0,k4=0;
+  k1=f(R,r);
+  k2=f(R+(h/2),r+(h/2));
+  k3=f(R+(h/2),r+(h/2));
+  k4=f(R,r);
+  
+  double phi_n1=phi_n+(h/6)*(k1+2*k2+2*k3+k4);
   return phi_n1;
 }
+
 
 //funcion para imprimir
 void printVector(vectorR4 a);
